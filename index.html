@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="de" ng-app="RadioCheckerApp">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+        <meta name="description" content="RadioChecker.com zeigt dir die meistgespielten Songs deines
+            Lieblings-Radiosenders. Und was läuft bei dir so?">
+        <link rel="canonical" href="http://www.radiochecker.com/">
+        <link rel="icon" type="image/png" href="assets/img/favicon.png" sizes="180x180">
+
+        <!-- Apple Touch Icons -->
+        <link rel="apple-touch-icon" href="assets/img/apple-touch-icons/touch-icon-iphone-retina.png">
+        <link rel="apple-touch-icon" sizes="152x152" href="assets/img/apple-touch-icons/touch-icon-ipad.png">
+        <link rel="apple-touch-icon" sizes="180x180" href="assets/img/apple-touch-icons/touch-icon-iphone-retina.png">
+        <link rel="apple-touch-icon" sizes="167x167" href="assets/img/apple-touch-icons/touch-icon-ipad-retina.png">
+
+        <!-- OG tags -->
+        <meta property="og:title" content="RadioChecker.com &mdash; Und was läuft bei dir so?" />
+        <meta property="og:type" content="website" />
+        <meta property="og:description" content="RadioChecker.com zeigt dir die meistgespielten Songs deines
+            Lieblings-Radiosenders. Und was läuft bei dir so?" />
+        <meta property="og:url" content="http://www.radiochecker.com/" />
+        <meta property="og:image" content="http://radiochecker.com/assets/img/og-image.jpg" />
+        <meta property="og:site_name" content="RadioChecker.com - Und was läuft bei dir so?" />
+
+        <title>RadioChecker.com &mdash; Und was läuft bei dir so?</title>
+
+        <base href="/">
+        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" />
+        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+        <link rel="stylesheet" href="assets/css/fade.css" />
+        <link rel="stylesheet" href="assets/css/app.css" />
+        <link href="https://fonts.googleapis.com/css?family=Pacifico|Raleway|Zilla+Slab:700" rel="stylesheet">
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+        <script src="//netdna.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.5/angular.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-i18n/1.6.5/angular-locale_de-at.min.js"></script>
+        <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.6.5/angular-route.min.js"></script>
+        <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.6.5/angular-animate.min.js"></script>
+        <script src="radiochecker/app.js"></script>
+        <script src="radiochecker/start/startController.js"></script>
+        <script src="radiochecker/toptracks/topTracksController.js"></script>
+        <script src="radiochecker/search/searchController.js"></script>
+    </head>
+    <body class="bg-image">
+
+        <script>
+            (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+            })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+        </script>
+
+        <div ng-view class="fade" autoscroll="true"></div>
+
+    </body>
+</html>

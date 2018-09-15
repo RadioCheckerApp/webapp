@@ -1,0 +1,247 @@
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12 text-center">
+            <h1><a href="/" title="www.radiochecker.com" class="rc-brand">RadioChecker</a></h1>
+        </div>
+    </div>
+
+    <div class="row sub-bar">
+        <div class="col-md-4">
+            <div class="input-group">
+                <span class="input-group-addon" id="basic-addon1">
+                    <i class="fa fa-podcast" aria-hidden="true"></i>
+                </span>
+                <input type="text" class="form-control" aria-label="..." value="{{input.radiostationSelected.name}}"
+                       ng-readonly="true" />
+                <div class="input-group-btn">
+                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="false"><span class="caret"></span></button>
+                    <ul class="dropdown-menu dropdown-menu-right">
+                        <li ng-repeat="item in data.radiostations">
+                            <a href="#" ng-click="setRadiostation($index)">{{item.name}}</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="input-group">
+                <span class="input-group-addon" id="basic-addon2">
+                    <i class="fa fa-calendar" aria-hidden="true"></i>
+                </span>
+                <input class="form-control" type="date" ng-model="input.date" ng-required="true"
+                       placeholder="YYYY-MM-DD" aria-describedby="basic-addon2" name="dateinput"
+                       ng-readonly="!ctrl.customDate" ng-blur="checkDate()"/>
+                <div class="input-group-btn">
+                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="false"><span class="caret"></span></button>
+                    <ul class="dropdown-menu dropdown-menu-right">
+                        <li><a href="#" ng-click="setDate(0)">heute</a></li>
+                        <li><a href="#" ng-click="setDate(1)">gestern</a></li>
+                        <li><a href="#" ng-click="setDate(2)">vorgestern</a></li>
+                        <li><a href="#" ng-click="setDate(3)">letzte Woche</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a href="#" ng-click="setDate(4)">Datum eingeben ...</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <button type="button" class="btn btn-default go-button left" ng-click="loadTopTracksDay()"
+                    ng-disabled="input.error.radiostation || input.error.date || ctrl.connError">
+                <i class="fa fa-calendar-times-o" aria-hidden="true"></i>
+                &nbsp;Tagescharts
+            </button>
+            <button type="button" class="btn btn-default go-button right" ng-click="loadTopTracksWeek()"
+                    ng-disabled="input.error.radiostation || input.error.date || ctrl.connError">
+                <i class="fa fa-calendar" aria-hidden="true"></i>
+                &nbsp;Wochencharts
+            </button>
+            <div class="clear"></div>
+        </div>
+    </div>
+
+    <div class="row spacer-bottom" ng-if="!ctrl.inputSubmitted && !ctrl.connError">
+        <div class="col-md-2"></div>
+        <div class="col-md-8 messagebox">
+                <p>
+                    <span class="highlight highlight-orange">Die meistgespielten Songs deines Lieblingssenders</span>
+                </p>
+                <p>
+                    <span class="highlight highlight-orange">1.</span>
+                    <span class="highlight highlight-default">Wähle einen Radiosender aus</span>
+                </p>
+                <p>
+                    <span class="highlight highlight-orange">2.</span>
+                    <span class="highlight highlight-default">Gib das gewünschte Datum an</span>
+                </p>
+                <p>
+                    <span class="highlight highlight-orange">3.</span>
+                    <span class="highlight highlight-default">
+                        Hol dir die Statistik für den Tag oder die gesamte Woche
+                    </span>
+                </p>
+        </div>
+        <div class="col-md-2"></div>
+    </div>
+
+    <div class="row row-animate" ng-if="ctrl.requestFinished && !ctrl.connError">
+        <div class="col-lg-12 info-bar">
+            <p>
+                <span class="highlight highlight-default">
+                    Die meistgespielten Songs auf {{input.radiostationSelectedSave.name}} für
+                    <span ng-if="ctrl.isWeekView">
+                        Kalenderwoche #{{data.weekNo}}
+                        ({{data.beginDate | date:"dd.MM.yyyy"}} &mdash; {{data.endDate | date:"dd.MM.yyyy"}})
+                    </span>
+                    <span ng-if="!ctrl.isWeekView">
+                        {{data.beginDate | date:"EEEE, dd.MM.yyyy"}}
+                    </span>
+                </span>
+            </p>
+        </div>
+    </div>
+
+    <div class="row row-animate spacer-bottom" ng-if="ctrl.requestFinished && !ctrl.connError">
+        <div class="col-md-4">
+            <div class="trackbox-header">
+                <p><strong>Platz #1</strong></p>
+            </div>
+            <div class="trackbox">
+                <div class="track" ng-repeat="track in data.tracks.first">
+                    <div class="wrapper">
+                        <div class="track-counter">
+                            <div class="counter">{{ track.count }}</div>
+                            <div class="small">Mal</div>
+                        </div>
+                        <div class="track-info">
+                            <div class="title">{{ track.title | uppercase }}</div>
+                            <div>{{ track.artist | uppercase }}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="track" ng-if="data.tracks.first.length == 0">
+                    <div class="center">
+                        <span class="fa-stack">
+                          <i class="fa fa-volume-up fa-stack-lg"></i>
+                          <i class="fa fa-ban fa-stack-2x"></i>
+                        </span>
+                        <div class="center">SORRY, NOCH ZU WENIG REPLAYS</div>
+                    </div>
+                </div>
+                <div class="track" ng-if="data.tracks.first[0].count == 1">
+                    <div class="center">
+                        <i class="fa fa-ellipsis-h" aria-hidden="true"></i>
+                        <div class="center">UND VIELE WEITERE SONGS</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="trackbox-header">
+                <p><strong>Platz #2</strong></p>
+            </div>
+            <div class="trackbox">
+                <div class="track" ng-repeat="track in data.tracks.second">
+                    <div class="wrapper">
+                        <div class="track-counter">
+                            <div class="counter">{{ track.count }}</div>
+                            <div class="small">Mal</div>
+                        </div>
+                        <div class="track-info">
+                            <div class="title">{{ track.title | uppercase }}</div>
+                            <div>{{ track.artist | uppercase }}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="track" ng-if="data.tracks.second.length == 0">
+                    <div class="center">
+                        <span class="fa-stack">
+                          <i class="fa fa-volume-up fa-stack-lg"></i>
+                          <i class="fa fa-ban fa-stack-2x"></i>
+                        </span>
+                        <div class="center">SORRY, NOCH ZU WENIG REPLAYS</div>
+                    </div>
+                </div>
+                <div class="track" ng-if="data.tracks.second[0].count == 1">
+                    <div class="center">
+                        <i class="fa fa-ellipsis-h" aria-hidden="true"></i>
+                        <div class="center">UND VIELE WEITERE SONGS</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="trackbox-header">
+                <p><strong>Platz #3</strong></p>
+            </div>
+            <div class="trackbox">
+                <div class="track" ng-repeat="track in data.tracks.third">
+                    <div class="wrapper">
+                        <div class="track-counter">
+                            <div class="counter">{{ track.count }}</div>
+                            <div class="small">Mal</div>
+                        </div>
+                        <div class="track-info">
+                            <div class="title">{{ track.title | uppercase }}</div>
+                            <div>{{ track.artist | uppercase }}</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="track" ng-if="data.tracks.third.length == 0">
+                    <div class="center">
+                        <span class="fa-stack">
+                          <i class="fa fa-volume-up fa-stack-lg"></i>
+                          <i class="fa fa-ban fa-stack-2x"></i>
+                        </span>
+                        <div class="center">SORRY, NOCH ZU WENIG REPLAYS</div>
+                    </div>
+                </div>
+                <div class="track" ng-if="data.tracks.third[0].count == 1">
+                    <div class="center">
+                        <i class="fa fa-ellipsis-h" aria-hidden="true"></i>
+                        <div class="center">UND VIELE WEITERE SONGS</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row row-animate spacer-bottom" ng-if="ctrl.inputSubmitted && !ctrl.requestFinished && !ctrl.connError">
+        <div class="col-lg-12 messagebox">
+            <img class="img-loading" src="assets/img/radio.svg">
+            <p>
+                <span class="highlight highlight-orange">
+                    Empfange Daten für {{ input.radiostationSelected.name }} ...
+                </span>
+            </p>
+        </div>
+    </div>
+
+    <div class="row row-animate spacer-bottom" ng-if="ctrl.connError">
+        <div class="col-lg-12 messagebox">
+            <p>
+                <i class="fa fa-exclamation-circle fa-5x rc-brand-color hidden-xs" aria-hidden="true"></i>
+                <i class="fa fa-exclamation-circle fa-3x rc-brand-color visible-xs" aria-hidden="true"></i>
+            </p>
+            <p>
+                <span class="highlight highlight-default">
+                    Ooops... Wir haben wohl gerade schlechten Empfang
+                </span>
+            </p>
+            <p>
+                <span class="highlight highlight-default">
+                    Bitte lade die Seite erneut oder versuche es später wieder!
+                </span>
+            </p>
+        </div>
+    </div>
+
+    <div class="row footer">
+        <div class="col-sm-12">
+            <a href="/about/wtf" title="Über RadioChecker.com">Über RadioChecker.com</a> |
+            <a href="/about/imprint" title="Impressum">Impressum</a> |
+            <a href="/about/privacy" title="Datenschutz">Datenschutz</a>
+        </div>
+    </div>
+</div>
