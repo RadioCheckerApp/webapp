@@ -62,17 +62,32 @@ angular.module('RadioCheckerApp')
                 resetData();
                 $scope.ctrl.isWeekView = false;
 
-                searchstringSanitized = $scope.input.searchString.replace(/\s+/g, "+");
+                var searchstringSanitized = $scope.input.searchString.replace(/\s+/g, "+");
 
                 $http.get(
-                    "http://api.radiochecker.com:8080/search/day" +
-                    "/" + $filter('date')($scope.input.date, "yyyy-MM-dd") +
-                    "/" + searchstringSanitized)
+                    "https://pul5mro035.execute-api.eu-central-1.amazonaws.com/dev/tracks/search" +
+                    "?date=" + $filter('date')($scope.input.date, "yyyy-MM-dd") +
+                    "&q=" + searchstringSanitized, {
+                        headers: {
+                            'X-API-KEY': 'bGF04eKSab35BrrNSvo9p9knzOE6dVZX6TsAQ79K',
+                            'Content-Type': 'application/json'
+                        }
+                    })
                     .then(function(response) {
-                        $scope.data.beginDate = new Date(response.data.date);
-                        $scope.data.radiostations = response.data.stations;
-                        $scope.data.searchResult = response.data.results;
-                        $timeout(function() { $scope.ctrl.requestFinished = true; }, 3000);
+                        if (!response.data.success) throw "Request failed: " + response.data.message;
+                        $scope.data.beginDate = new Date(response.data.data.date);
+                        if (response.data.data.tracks.length > 0) {
+                            angular.forEach(Object.keys(response.data.data.tracks[0].plays_by_station), function (stationId) {
+                                $scope.data.radiostations.push($scope.data.radiostationMap.get(stationId))
+                            })
+                        } else {
+                            $scope.data.radiostations = [];
+                        }
+                        $scope.data.searchResult = response.data.data.tracks;
+                        angular.forEach($scope.data.searchResult, function (result, index) {
+                            $scope.data.searchResult[index].plays_by_station = Object.values($scope.data.searchResult[index].plays_by_station);
+                        });
+                        $timeout(function() { $scope.ctrl.requestFinished = true; }, 2000);
                     })
                     .catch(function (data) {
                         console.log(data);
@@ -88,24 +103,29 @@ angular.module('RadioCheckerApp')
 
                 searchstringSanitized = $scope.input.searchString.replace(/\s+/g, "+");
 
-                // see https://github.com/angular/angular.js/issues/10450
-                weekNoBugFix = $filter('date')(
-                    new Date($scope.input.date.getFullYear(),
-                        $scope.input.date.getMonth(),
-                        $scope.input.date.getDate()
-                    ), "ww", "UTC");
-
                 $http.get(
-                    "http://api.radiochecker.com:8080/search/week" +
-                    "/" + $filter('date')($scope.input.date, "yyyy") +
-                    "/" + weekNoBugFix +
-                    "/" + searchstringSanitized)
+                    "https://pul5mro035.execute-api.eu-central-1.amazonaws.com/dev/tracks/search" +
+                    "?week=" + $filter('date')($scope.input.date, "yyyy-MM-dd") +
+                    "&q=" + searchstringSanitized, {
+                        headers: {
+                            'X-API-KEY': 'bGF04eKSab35BrrNSvo9p9knzOE6dVZX6TsAQ79K',
+                            'Content-Type': 'application/json'
+                        }
+                    })
                     .then(function(response) {
-                        $scope.data.beginDate = new Date(response.data.beginDate);
-                        $scope.data.endDate = new Date(response.data.endDate);
-                        $scope.data.weekNo = response.data.weekNo;
-                        $scope.data.radiostations = response.data.stations;
-                        $scope.data.searchResult = response.data.results;
+                        $scope.data.beginDate = new Date(response.data.data.start_date);
+                        $scope.data.endDate = new Date(response.data.data.end_date);
+                        if (response.data.data.tracks.length > 0) {
+                            angular.forEach(Object.keys(response.data.data.tracks[0].plays_by_station), function (stationId) {
+                                $scope.data.radiostations.push($scope.data.radiostationMap.get(stationId))
+                            })
+                        } else {
+                            $scope.data.radiostations = [];
+                        }
+                        $scope.data.searchResult = response.data.data.tracks;
+                        angular.forEach($scope.data.searchResult, function (result, index) {
+                            $scope.data.searchResult[index].plays_by_station = Object.values($scope.data.searchResult[index].plays_by_station);
+                        });
                         $timeout(function() { $scope.ctrl.requestFinished = true; }, 3000);
                     })
                     .catch(function (data) {
@@ -115,7 +135,7 @@ angular.module('RadioCheckerApp')
             };
 
             $scope.checkDate = function () {
-                if ($scope.input.date == null || $scope.input.date == "") {
+                if ($scope.input.date == null || $scope.input.date === "") {
                     $scope.input.date = new Date();
                 } else {
                     $scope.input.date = new Date($scope.input.date);
@@ -139,10 +159,10 @@ angular.module('RadioCheckerApp')
             };
 
             var inputValid = function () {
-                if (!$scope.input.searchString || $scope.input.searchString == "" ||
+                if (!$scope.input.searchString || $scope.input.searchString === "" ||
                     $scope.input.searchString.length < 2) {
                     $scope.input.error.searchString = true
-                } else if ($scope.input.date == null || $scope.input.date == "") {
+                } else if ($scope.input.date == null || $scope.input.date === "") {
                     $scope.input.error.date = true
                 }
                 return !$scope.input.error.searchString && !$scope.input.error.date;
@@ -155,7 +175,25 @@ angular.module('RadioCheckerApp')
                     "Songsuche erfährst du es!";
             };
 
+            var onLoad = function () {
+                $http.get("https://pul5mro035.execute-api.eu-central-1.amazonaws.com/dev/stations", {
+                    headers: {'X-API-KEY': 'bGF04eKSab35BrrNSvo9p9knzOE6dVZX6TsAQ79K', 'Content-Type': 'application/json'}
+                })
+                    .then(function(response) {
+                        if (!response.data.success) throw "Request failed: " + response.data.message;
+                        $scope.data.radiostationMap = new Map();
+                        angular.forEach(response.data.data.stations, function (station) {
+                            $scope.data.radiostationMap.set(station.stationId, station.name);
+                        })
+                    })
+                    .catch(function (data) {
+                        console.log(data);
+                        $scope.ctrl.connError = true;
+                    });
+            };
+
             init();
+            onLoad();
         }])
 
     .directive('noSpecialChars', function () {
@@ -168,7 +206,7 @@ angular.module('RadioCheckerApp')
                         return '';
                     }
                     cleanInputValue = inputValue.replace(/[^\w\s]/gi, '');
-                    if (cleanInputValue != inputValue) {
+                    if (cleanInputValue !== inputValue) {
                         modelCtrl.$setViewValue(cleanInputValue);
                         modelCtrl.$render();
                     }

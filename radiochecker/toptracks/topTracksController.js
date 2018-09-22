@@ -72,30 +72,32 @@ angular.module('RadioCheckerApp')
                 $scope.ctrl.isWeekView = false;
 
                 $http.get(
-                    "http://api.radiochecker.com:8080/" + $scope.input.radiostationSelected.value +
+                    "https://pul5mro035.execute-api.eu-central-1.amazonaws.com/dev/stations/" +
+                    $scope.input.radiostationSelected.value +
                     "/tracks" +
-                    "/day" +
-                    "/" + $filter('date')($scope.input.date, "yyyy-MM-dd") +
-                    "/top")
+                    "?date=" + $filter('date')($scope.input.date, "yyyy-MM-dd"), {
+                    headers: {'X-API-KEY': 'bGF04eKSab35BrrNSvo9p9knzOE6dVZX6TsAQ79K', 'Content-Type': 'application/json'}
+                })
                     .then(function(response) {
-                        $scope.data.beginDate = new Date(response.data.date);
+                        if (!response.data.success) throw "Request failed: " + response.data.message;
+                        $scope.data.beginDate = new Date(response.data.data.date);
                         var rank = 0, cnt = 0;
-                        angular.forEach(response.data.plays, function (track, key) {
-                            if (rank == 0) {
-                                cnt = track.count;
+                        angular.forEach(response.data.data.tracks, function (countedTrack) {
+                            if (rank === 0) {
+                                cnt = countedTrack.times_played;
                                 rank++;
                             }
-                            if (track.count < cnt) {
+                            if (countedTrack.times_played < cnt) {
                                 rank++;
-                                cnt = track.count;
+                                cnt = countedTrack.times_played;
                             }
                             switch (rank) {
-                                case 1: $scope.data.tracks.first.push(track); break;
-                                case 2: $scope.data.tracks.second.push(track); break;
-                                case 3: $scope.data.tracks.third.push(track); break;
+                                case 1: $scope.data.tracks.first.push(countedTrack); break;
+                                case 2: $scope.data.tracks.second.push(countedTrack); break;
+                                case 3: $scope.data.tracks.third.push(countedTrack); break;
                             }
-                        })
-                        $timeout(function() { $scope.ctrl.requestFinished = true; }, 3000);
+                        });
+                        $timeout(function() { $scope.ctrl.requestFinished = true; }, 2000);
                     })
                     .catch(function (data) {
                         console.log(data);
@@ -109,41 +111,36 @@ angular.module('RadioCheckerApp')
                 resetData();
                 $scope.ctrl.isWeekView = true;
 
-                // see https://github.com/angular/angular.js/issues/10450
-                weekNoBugFix = $filter('date')(
-                    new Date($scope.input.date.getFullYear(),
-                        $scope.input.date.getMonth(),
-                        $scope.input.date.getDate()
-                    ), "ww", "UTC");
-
                 $http.get(
-                    "http://api.radiochecker.com:8080/" + $scope.input.radiostationSelected.value +
+                    "https://pul5mro035.execute-api.eu-central-1.amazonaws.com/dev/stations/" +
+                    $scope.input.radiostationSelected.value +
                     "/tracks" +
-                    "/week" +
-                    "/" + $filter('date')($scope.input.date, "yyyy") +
-                    "/" + weekNoBugFix +
-                    "/top")
+                    "?week=" + $filter('date')($scope.input.date, "yyyy-MM-dd"),
+                    {
+                        headers: {'X-API-KEY': 'bGF04eKSab35BrrNSvo9p9knzOE6dVZX6TsAQ79K', 'Content-Type': 'application/json'}
+                    })
                     .then(function(response) {
+                        if (!response.data.success) throw "Request failed: " + response.data.message;
                         $scope.data.weekNo = response.data.weekNo;
-                        $scope.data.beginDate = new Date(response.data.beginDate);
-                        $scope.data.endDate = new Date(response.data.endDate);
+                        $scope.data.beginDate = new Date(response.data.data.start_date);
+                        $scope.data.endDate = new Date(response.data.data.end_date);
                         var rank = 0, cnt = 0;
-                        angular.forEach(response.data.plays, function (track, key) {
-                            if (rank == 0) {
-                                cnt = track.count;
+                        angular.forEach(response.data.data.tracks, function (countedTrack) {
+                            if (rank === 0) {
+                                cnt = countedTrack.times_played;
                                 rank++;
                             }
-                            if (track.count < cnt) {
+                            if (countedTrack.times_played < cnt) {
                                 rank++;
-                                cnt = track.count;
+                                cnt = countedTrack.times_played;
                             }
                             switch (rank) {
-                                case 1: $scope.data.tracks.first.push(track); break;
-                                case 2: $scope.data.tracks.second.push(track); break;
-                                case 3: $scope.data.tracks.third.push(track); break;
+                                case 1: $scope.data.tracks.first.push(countedTrack); break;
+                                case 2: $scope.data.tracks.second.push(countedTrack); break;
+                                case 3: $scope.data.tracks.third.push(countedTrack); break;
                             }
                         });
-                        $timeout(function() { $scope.ctrl.requestFinished = true; }, 3000);
+                        $timeout(function() { $scope.ctrl.requestFinished = true; }, 2000);
                     })
                     .catch(function (data) {
                         console.log(data);
@@ -152,7 +149,7 @@ angular.module('RadioCheckerApp')
             };
 
             $scope.checkDate = function () {
-                if ($scope.input.date == null || $scope.input.date == "") {
+                if ($scope.input.date == null || $scope.input.date === "") {
                     $scope.input.date = new Date();
                 } else {
                     $scope.input.date = new Date($scope.input.date);
@@ -173,20 +170,25 @@ angular.module('RadioCheckerApp')
             };
 
             var inputValid = function () {
-                if ($scope.input.radiostationSelected.value == '') {
+                if ($scope.input.radiostationSelected.value === '') {
                     $scope.input.error.radiostation = true;
-                } else if ($scope.input.date == null || $scope.input.date == "") {
+                } else if ($scope.input.date == null || $scope.input.date === '') {
                     $scope.input.error.date = true
                 }
                 return !$scope.input.error.radiostation && !$scope.input.error.date;
             };
 
-
             var onLoad = function () {
-                $http.get("http://api.radiochecker.com:8080/stations")
+                $http.get("https://pul5mro035.execute-api.eu-central-1.amazonaws.com/dev/stations", {
+                    headers: {'X-API-KEY': 'bGF04eKSab35BrrNSvo9p9knzOE6dVZX6TsAQ79K', 'Content-Type': 'application/json'}
+                })
                     .then(function(response) {
-                        angular.forEach(response.data, function (val, key) {
-                            $scope.data.radiostations.push({ name: key, value: val})
+                        if (!response.data.success) throw "Request failed: " + response.data.message;
+                        angular.forEach(response.data.data.stations, function (station) {
+                            $scope.data.radiostations.push({
+                                name: station.name,
+                                value: station.stationId
+                            })
                         })
                     })
                     .catch(function (data) {

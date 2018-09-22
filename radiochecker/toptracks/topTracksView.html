@@ -89,12 +89,13 @@
         <div class="col-lg-12 info-bar">
             <p>
                 <span class="highlight highlight-default">
-                    Die meistgespielten Songs auf {{input.radiostationSelectedSave.name}} für
+                    Die meistgespielten Songs auf {{input.radiostationSelectedSave.name}}
                     <span ng-if="ctrl.isWeekView">
-                        Kalenderwoche #{{data.weekNo}}
-                        ({{data.beginDate | date:"dd.MM.yyyy"}} &mdash; {{data.endDate | date:"dd.MM.yyyy"}})
+                        von
+                        {{data.beginDate | date:"dd.MM.yyyy"}} &mdash; {{data.endDate | date:"dd.MM.yyyy"}}
                     </span>
                     <span ng-if="!ctrl.isWeekView">
+                        für
                         {{data.beginDate | date:"EEEE, dd.MM.yyyy"}}
                     </span>
                 </span>
@@ -108,15 +109,15 @@
                 <p><strong>Platz #1</strong></p>
             </div>
             <div class="trackbox">
-                <div class="track" ng-repeat="track in data.tracks.first">
+                <div class="track" ng-repeat="countedTrack in data.tracks.first">
                     <div class="wrapper">
                         <div class="track-counter">
-                            <div class="counter">{{ track.count }}</div>
+                            <div class="counter">{{ countedTrack.times_played }}</div>
                             <div class="small">Mal</div>
                         </div>
                         <div class="track-info">
-                            <div class="title">{{ track.title | uppercase }}</div>
-                            <div>{{ track.artist | uppercase }}</div>
+                            <div class="title">{{ countedTrack.track.title | uppercase }}</div>
+                            <div>{{ countedTrack.track.artist | uppercase }}</div>
                         </div>
                     </div>
                 </div>
@@ -142,15 +143,15 @@
                 <p><strong>Platz #2</strong></p>
             </div>
             <div class="trackbox">
-                <div class="track" ng-repeat="track in data.tracks.second">
+                <div class="track" ng-repeat="countedTrack in data.tracks.second">
                     <div class="wrapper">
                         <div class="track-counter">
-                            <div class="counter">{{ track.count }}</div>
+                            <div class="counter">{{ countedTrack.times_played }}</div>
                             <div class="small">Mal</div>
                         </div>
                         <div class="track-info">
-                            <div class="title">{{ track.title | uppercase }}</div>
-                            <div>{{ track.artist | uppercase }}</div>
+                            <div class="title">{{ countedTrack.track.title | uppercase }}</div>
+                            <div>{{ countedTrack.track.artist | uppercase }}</div>
                         </div>
                     </div>
                 </div>
@@ -176,15 +177,15 @@
                 <p><strong>Platz #3</strong></p>
             </div>
             <div class="trackbox">
-                <div class="track" ng-repeat="track in data.tracks.third">
+                <div class="track" ng-repeat="countedTrack in data.tracks.third">
                     <div class="wrapper">
                         <div class="track-counter">
-                            <div class="counter">{{ track.count }}</div>
+                            <div class="counter">{{ countedTrack.times_played }}</div>
                             <div class="small">Mal</div>
                         </div>
                         <div class="track-info">
-                            <div class="title">{{ track.title | uppercase }}</div>
-                            <div>{{ track.artist | uppercase }}</div>
+                            <div class="title">{{ countedTrack.track.title | uppercase }}</div>
+                            <div>{{ countedTrack.track.artist | uppercase }}</div>
                         </div>
                     </div>
                 </div>

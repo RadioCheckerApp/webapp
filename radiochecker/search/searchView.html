@@ -54,7 +54,7 @@
         </div>
     </div>
 
-    <div class="row spacer-bottom" ng-if="!ctrl.inputSubmitted">
+    <div class="row spacer-bottom" ng-if="!ctrl.inputSubmitted && !ctrl.connError">
         <div class="col-md-2"></div>
         <div class="col-md-8 messagebox">
             <p>
@@ -84,8 +84,7 @@
                 <span class="highlight highlight-default">
                     Deine Suche nach "{{input.searchStringSaved}}" für
                     <span ng-if="ctrl.isWeekView">
-                        Kalenderwoche #{{data.weekNo}}
-                        ({{data.beginDate | date:"dd.MM.yyyy"}} &mdash; {{data.endDate | date:"dd.MM.yyyy"}})
+                        {{data.beginDate | date:"dd.MM.yyyy"}} &mdash; {{data.endDate | date:"dd.MM.yyyy"}}
                     </span>
                     <span ng-if="!ctrl.isWeekView">
                         {{data.beginDate | date:"EEEE, dd.MM.yyyy"}}
@@ -114,7 +113,9 @@
                                 <div class="title">{{result.track.title | uppercase}}</div>
                                 <div>{{ result.track.artist | uppercase }}</div>
                             </td>
-                            <td class="center middle" ng-repeat="play in result.plays track by $index">{{play}} Mal</td>
+                            <td class="center middle"
+                                ng-repeat="play in result.plays_by_station track by $index">{{play}}
+                                Mal</td>
                         </tr>
                     </tbody>
                 </table>
@@ -145,7 +146,7 @@
                             <tbody>
                                 <tr ng-repeat="radiostation in data.radiostations">
                                     <td>{{ radiostation }}:</td>
-                                    <td>{{ result.plays[$index] }} Mal</td>
+                                    <td>{{ result.plays_by_station[$index] }} Mal</td>
                                 </tr>
                             </tbody>
                         </table>
