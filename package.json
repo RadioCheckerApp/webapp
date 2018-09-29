@@ -1,0 +1,30 @@
+{
+  "name": "webapp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "Gulpfile.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RadioCheckerApp/webapp.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/RadioCheckerApp/webapp/issues"
+  },
+  "homepage": "https://github.com/RadioCheckerApp/webapp#readme",
+  "devDependencies": {
+    "add-stream": "^1.0.0",
+    "del": "^3.0.0",
+    "gulp": "^3.9.1",
+    "gulp-concat": "^2.6.1",
+    "gulp-ng-config": "^1.5.0",
+    "gulp-util": "^3.0.8",
+    "gulp-webserver": "^0.9.1",
+    "minimist": "^1.2.0",
+    "vinyl-ftp": "^0.6.1"
+  }
+}

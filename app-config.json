@@ -1,0 +1,14 @@
+{
+  "production": {
+    "config": {
+      "api": "https://api.radiochecker.com/v1",
+      "apiKey": "FG2xlzVgEN6xmlWKouGWn3oFTsIiu4oGalrZHDZp"
+    }
+  },
+  "development": {
+    "config": {
+      "api": "https://api-dev.radiochecker.com/v1",
+      "apiKey": "F2RzS865E38QfdD95ZRoo7yL2VcJPznn572kRblf"
+    }
+  }
+}

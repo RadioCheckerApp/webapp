@@ -1,7 +1,7 @@
 angular.module('RadioCheckerApp')
 
-    .controller('TopTracksController', ['$scope', '$routeParams', '$location', '$http', '$filter', '$timeout',
-        function ($scope, $routeParams, $location, $http, $filter, $timeout) {
+    .controller('TopTracksController', ['$scope', '$routeParams', '$location', '$http', '$filter', '$timeout', 'config',
+        function ($scope, $routeParams, $location, $http, $filter, $timeout, $config) {
 
             $scope.ctrl = {
                 customDate: false,
@@ -72,11 +72,11 @@ angular.module('RadioCheckerApp')
                 $scope.ctrl.isWeekView = false;
 
                 $http.get(
-                    "https://pul5mro035.execute-api.eu-central-1.amazonaws.com/dev/stations/" +
+                    $config.api + "/stations/" +
                     $scope.input.radiostationSelected.value +
                     "/tracks" +
                     "?date=" + $filter('date')($scope.input.date, "yyyy-MM-dd"), {
-                    headers: {'X-API-KEY': 'bGF04eKSab35BrrNSvo9p9knzOE6dVZX6TsAQ79K', 'Content-Type': 'application/json'}
+                    headers: {'X-API-KEY': $config.apiKey, 'Content-Type': 'application/json'}
                 })
                     .then(function(response) {
                         if (!response.data.success) throw "Request failed: " + response.data.message;
@@ -112,12 +112,12 @@ angular.module('RadioCheckerApp')
                 $scope.ctrl.isWeekView = true;
 
                 $http.get(
-                    "https://pul5mro035.execute-api.eu-central-1.amazonaws.com/dev/stations/" +
+                    $config.api + "/stations/" +
                     $scope.input.radiostationSelected.value +
                     "/tracks" +
                     "?week=" + $filter('date')($scope.input.date, "yyyy-MM-dd"),
                     {
-                        headers: {'X-API-KEY': 'bGF04eKSab35BrrNSvo9p9knzOE6dVZX6TsAQ79K', 'Content-Type': 'application/json'}
+                        headers: {'X-API-KEY': $config.apiKey, 'Content-Type': 'application/json'}
                     })
                     .then(function(response) {
                         if (!response.data.success) throw "Request failed: " + response.data.message;
@@ -179,8 +179,8 @@ angular.module('RadioCheckerApp')
             };
 
             var onLoad = function () {
-                $http.get("https://pul5mro035.execute-api.eu-central-1.amazonaws.com/dev/stations", {
-                    headers: {'X-API-KEY': 'bGF04eKSab35BrrNSvo9p9knzOE6dVZX6TsAQ79K', 'Content-Type': 'application/json'}
++                $http.get($config.api + "/stations", {
+                    headers: {'X-API-KEY': $config.apiKey, 'Content-Type': 'application/json'}
                 })
                     .then(function(response) {
                         if (!response.data.success) throw "Request failed: " + response.data.message;

@@ -1,4 +1,4 @@
-angular.module('RadioCheckerApp', ['ngRoute', 'ngAnimate'])
+angular.module('RadioCheckerApp', ['ngRoute', 'ngAnimate', 'appConfig'])
 
     .config(function($routeProvider, $locationProvider) {
 

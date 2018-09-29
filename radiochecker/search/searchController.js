@@ -1,7 +1,7 @@
 angular.module('RadioCheckerApp')
 
-    .controller('SearchController', ['$scope', '$routeParams', '$location', '$http', '$filter', '$timeout',
-        function ($scope, $routeParams, $location, $http, $filter, $timeout) {
+    .controller('SearchController', ['$scope', '$routeParams', '$location', '$http', '$filter', '$timeout', 'config',
+        function ($scope, $routeParams, $location, $http, $filter, $timeout, $config) {
 
             $scope.ctrl = {
                 customDate: false,
@@ -65,11 +65,11 @@ angular.module('RadioCheckerApp')
                 var searchstringSanitized = $scope.input.searchString.replace(/\s+/g, "+");
 
                 $http.get(
-                    "https://pul5mro035.execute-api.eu-central-1.amazonaws.com/dev/tracks/search" +
+                    $config.api + "/tracks/search" +
                     "?date=" + $filter('date')($scope.input.date, "yyyy-MM-dd") +
                     "&q=" + searchstringSanitized, {
                         headers: {
-                            'X-API-KEY': 'bGF04eKSab35BrrNSvo9p9knzOE6dVZX6TsAQ79K',
+                            'X-API-KEY': $config.apiKey,
                             'Content-Type': 'application/json'
                         }
                     })
@@ -104,11 +104,11 @@ angular.module('RadioCheckerApp')
                 searchstringSanitized = $scope.input.searchString.replace(/\s+/g, "+");
 
                 $http.get(
-                    "https://pul5mro035.execute-api.eu-central-1.amazonaws.com/dev/tracks/search" +
+                    $config.api + "/tracks/search" +
                     "?week=" + $filter('date')($scope.input.date, "yyyy-MM-dd") +
                     "&q=" + searchstringSanitized, {
                         headers: {
-                            'X-API-KEY': 'bGF04eKSab35BrrNSvo9p9knzOE6dVZX6TsAQ79K',
+                            'X-API-KEY': $config.apiKey,
                             'Content-Type': 'application/json'
                         }
                     })
@@ -176,8 +176,8 @@ angular.module('RadioCheckerApp')
             };
 
             var onLoad = function () {
-                $http.get("https://pul5mro035.execute-api.eu-central-1.amazonaws.com/dev/stations", {
-                    headers: {'X-API-KEY': 'bGF04eKSab35BrrNSvo9p9knzOE6dVZX6TsAQ79K', 'Content-Type': 'application/json'}
+                $http.get($config.api + "/stations", {
+                    headers: {'X-API-KEY': $config.apiKey, 'Content-Type': 'application/json'}
                 })
                     .then(function(response) {
                         if (!response.data.success) throw "Request failed: " + response.data.message;
