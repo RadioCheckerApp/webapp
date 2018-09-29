@@ -1,0 +1,23 @@
+language: node_js
+
+node_js:
+  - "node"
+
+install:
+  - npm ci
+
+script: 'true'  # skipping npm test
+
+deploy:
+  # deploy any change to dev
+  - provider: script
+    skip_cleanup: true
+    script: gulp deploy-dev --user $FTP_USER --password $FTP_PASSWORD
+    on:
+      branch: develop
+  # deploy to production if commit is tagged
+  - provider: script
+    skip_cleanup: true
+    script: gulp deploy-prod --user $FTP_USER --password $FTP_PASSWORD
+    on:
+      tags: true
