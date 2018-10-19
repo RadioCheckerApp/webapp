@@ -54,10 +54,18 @@ angular.module('RadioCheckerApp', ['ngRoute', 'ngAnimate', 'appConfig'])
         $locationProvider.html5Mode(true);
     })
 
-    .run(['$rootScope', '$route', '$location', '$window', function($rootScope, $route, $location, $window) {
+    .run(['$rootScope', '$route', '$location', '$window', '$templateCache', function($rootScope, $route, $location, $window, $templateCache) {
         // intitialize Google Analytics
         $window.ga('create', 'UA-72083509-2', 'auto');
         $window.ga('set', 'anonymizeIp', true);
+
+        $rootScope.$on('$routeChangeStart', function(event, next, current) {
+            // disable AngularJS template cache to make view updates immediately visible to the user
+            // https://stackoverflow.com/a/36751524/5801146
+            if (typeof(current) !== 'undefined'){
+                $templateCache.remove(current.templateUrl);
+            }
+        });
 
         $rootScope.$on('$routeChangeSuccess', function() {
             // scrolls to top of view if route has changed to prevent flickering
